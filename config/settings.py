@@ -38,8 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #own_app
-    'todo'
+    'todo',
+    'users',
 ]
+
+# 로그인 후, 혹은 권한 없을 때 리다이렉트할 URL
+LOGIN_REDIRECT_URL = '/todo/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+# 로그인 필요 뷰로 갈 때 사용할 URL 이름
+LOGIN_URL = '/accounts/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

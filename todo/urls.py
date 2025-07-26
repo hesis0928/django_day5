@@ -1,9 +1,11 @@
+# todo/urls.py
 from django.urls import path
 from . import views
 
-app_name = 'todo'  # URL 이름공간 지정 (선택)
-
+app_name = 'todo'                   # ← 네임스페이스 선언
 urlpatterns = [
-    path('todo/',              views.todo_list, name='todo_list'),
-    path('todo/<int:todo_id>/', views.todo_info, name='todo_info'),
+    # 목록 보기 (/todo/)
+    path('', views.todo_list, name='todo_list'),
+    # 상세 보기 (/todo/1/, 2, 3…)
+    path('<int:todo_id>/', views.todo_info, name='todo_info'),
 ]

@@ -20,6 +20,12 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # todo 앱 URL 연결
-    path('', include('todo.urls')),
+
+    # accounts/* 는 users 앱으로
+    path('accounts/', include('users.urls')),
+
+    # todo/ 로 들어오는 건 todo.urls에 네임스페이스 todo로 위임
+    path('todo/', include(('todo.urls', 'todo'), namespace='todo')),
 ]
+
+
