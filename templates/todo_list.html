@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>To‑Do List</title>
+</head>
+<body>
+  <h1>To-Do-List</h1>
+  <ul>
+    {% for todo in todos %}
+      <li>
+        <a href="{% url 'todo:todo_info' todo.id %}">
+          {{ todo.title }}
+        </a>
+        {% if todo.is_completed %}
+          ✔️
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>등록된 할 일이 없습니다.</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
