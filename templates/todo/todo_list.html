@@ -1,16 +1,33 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}To‑Do 목록 (CBV){% endblock %}
+{% block title %}To-Do 목록{% endblock %}
 {% block content %}
-  <h1>To‑Do 목록</h1>
+  <h2>To-Do 목록</h2>
 
+  <form method="get" novalidate>
+    <label for="search">검색어:</label>
+    <input id="search"
+           type="text"
+           name="q"
+           value="{{ request.GET.q }}"
+           placeholder="검색">
   <form method="get" action="">
     <input type="text" name="q" placeholder="검색" value="{{ request.GET.q }}">
     <button type="submit">검색</button>
   </form>
 
+  <a href="{% url 'todo:create' %}">새 To-Do 생성</a>
   <p><a href="{% url 'cbv:cbv_todo_create' %}">새 To‑Do 만들기</a></p>
 
+  <ul>
+    {% for todo in todos %}
+      <li>
+        <a href="{% url 'todo:detail' todo.pk %}">{{ todo.title }}</a>
+        — {{ todo.user.username }}
+      </li>
+    {% empty %}
+      <li>등록된 To-Do가 없습니다.</li>
+    {% endfor %}
+  </ul>
   {% if todos %}
     <ul>
       {% for todo in todos %}
@@ -23,14 +40,24 @@
       {% endfor %}
     </ul>
 
+  {% if is_paginated %}
+    <nav aria-label="페이지 네비게이션">
     <div class="pagination">
       {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&amp;q={{ request.GET.q }}{% endif %}">
+          이전
+        </a>
         <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}">이전</a>
       {% endif %}
+      <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
       <span>페이지 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
       {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&amp;q={{ request.GET.q }}{% endif %}">
+          다음
+        </a>
         <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}">다음</a>
       {% endif %}
+    </nav>
     </div>
 
   {% else %}

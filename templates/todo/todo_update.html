@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}To‑Do 수정{% endblock %}
+{% block title %}To-Do 수정{% endblock %}
 {% block content %}
   <h1>To‑Do 수정</h1>
+  <h2>To-Do 수정</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">수정 완료</button>
+    <button type="submit">저장</button>
   </form>
   <p><a href="{% url 'cbv:cbv_todo_info' object.pk %}">취소</a></p>
+  <a href="{% url 'todo:detail' todo.pk %}">취소</a>
 {% endblock %}

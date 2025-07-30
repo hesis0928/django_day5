@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
+<!-- cSpell:ignore 목록으로 돌아가기 -->
+{% block title %}To-Do 상세{% endblock %}
 {% block title %}To‑Do 상세 (CBV){% endblock %}
 {% block content %}
+  <h2>
+    {% if user.is_staff %}[{{ todo.user.username }}] {% endif %}{{ todo.title }}
+  </h2>
+  <hr />
   <h1>
     {% if user.is_staff %}[{{ object.user.username }}] {% endif %}{{ object.title }}
   </h1>
@@ -12,13 +18,32 @@
   <p><small>생성일: {{ object.created_at }}</small></p>
   <p><small>수정일: {{ object.modified_at }}</small></p>
 
+  <div>
+    <p><strong>설명:</strong> {{ todo.description }}</p>
+    <p><strong>시작일:</strong> {{ todo.start_date }}</p>
+    <p><strong>마감일:</strong> {{ todo.end_date }}</p>
+    <p><strong>완료 여부:</strong> {{ todo.is_completed|yesno:"완료,미완료" }}</p>
+    <p><small>생성일: {{ todo.created_at }}</small></p>
+  </div>
+
+  <div>
+    <a href="{% url 'todo:update' todo.pk %}">수정</a>
+    |
+    <form method="post"
+          action="{% url 'todo:delete' todo.pk %}"
+          style="display:inline;">
   <p>
     <a href="{% url 'cbv:cbv_todo_update' object.pk %}">수정</a> |
     <form method="post" action="{% url 'cbv:cbv_todo_delete' object.pk %}" style="display:inline;">
       {% csrf_token %}
       <button type="submit">삭제</button>
     </form>
+  </div>
   </p>
 
+  <div>
+    <!-- spellcheck 속성도 추가해 IDE 기본 스펠체크까지 차단 -->
+    <a href="{% url 'todo:list' %}" spellcheck="false">목록으로 돌아가기</a>
+  </div>
   <p><a href="{% url 'cbv:cbv_todo_list' %}">목록으로 돌아가기</a></p>
 {% endblock %}

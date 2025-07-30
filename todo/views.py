@@ -1,56 +1,69 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import (
+    ListView, DetailView, CreateView, UpdateView, DeleteView
+)
+from django.urls import reverse, reverse_lazy
 from django.db.models import Q
-from django.core.paginator import Paginator
+
 from .models import Todo
-from .forms import TodoForm, TodoUpdateForm
 
-@login_required
-def todo_list(request):
-    q = request.GET.get('q', '')
-    todos = Todo.objects.filter(user=request.user)
-    if q:
-        todos = todos.filter(
-            Q(title__icontains=q) |
-            Q(description__icontains=q)
+class OwnerOrAdminMixin(SingleObjectMixin, UserPassesTestMixin):
+    """
+    Mixin to allow access only to the object's owner or a staff user.
+    """
+    request: HttpRequest  # type hint for IDE
+
+    def test_func(self):
+        todo = self.get_object()
+        user = self.request.user
+        return user.is_staff or todo.user == user
+
+class TodoListView(LoginRequiredMixin, ListView):
+    model = Todo
+    template_name = 'todo/todo_list.html'
+    context_object_name = 'todos'
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = (
+            Todo.objects.all()
+            if self.request.user.is_staff
+            else Todo.objects.filter(user=self.request.user)
         )
-    paginator = Paginator(todos.order_by('-created_at'), 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'todo/todo_list.html', {'page_obj': page_obj, 'q': q})
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(title__icontains=q) | Q(description__icontains=q))
+        return qs.order_by('-created_at')
 
-@login_required
-def todo_info(request, todo_id):
-    todo = get_object_or_404(Todo, id=todo_id, user=request.user)
-    return render(request, 'todo/todo_info.html', todo.__dict__)
+class TodoDetailView(LoginRequiredMixin, OwnerOrAdminMixin, DetailView):
+    model = Todo
+    template_name = 'todo/todo_info.html'
+    context_object_name = 'todo'
 
-@login_required
-def todo_create(request):
-    if request.method == 'POST':
-        form = TodoForm(request.POST)
-        if form.is_valid():
-            todo = form.save(commit=False)
-            todo.user = request.user
-            todo.save()
-            return redirect('todo:todo_info', todo_id=todo.id)
-    else:
-        form = TodoForm()
-    return render(request, 'todo/todo_create.html', {'form': form})
+class TodoCreateView(LoginRequiredMixin, CreateView):
+    model = Todo
+    fields = ['category', 'title', 'description', 'start_date', 'end_date', 'is_completed']
+    template_name = 'todo/todo_create.html'
 
-@login_required
-def todo_update(request, todo_id):
-    todo = get_object_or_404(Todo, id=todo_id, user=request.user)
-    if request.method == 'POST':
-        form = TodoUpdateForm(request.POST, instance=todo)
-        if form.is_valid():
-            form.save()
-            return redirect('todo:todo_info', todo_id=todo.id)
-    else:
-        form = TodoUpdateForm(instance=todo)
-    return render(request, 'todo/todo_update.html', {'form': form, 'todo': todo})
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-@login_required
-def todo_delete(request, todo_id):
-    todo = get_object_or_404(Todo, id=todo_id, user=request.user)
-    todo.delete()
-    return redirect('todo:todo_list')
+    def get_success_url(self):
+        return reverse('todo:detail', kwargs={'pk': self.object.pk})
+
+class TodoUpdateView(LoginRequiredMixin, OwnerOrAdminMixin, UpdateView):
+    model = Todo
+    fields = ['category', 'title', 'description', 'start_date', 'end_date', 'is_completed']
+    template_name = 'todo/todo_update.html'
+    context_object_name = 'todo'
+
+    def get_success_url(self):
+        return reverse('todo:detail', kwargs={'pk': self.object.pk})
+
+class TodoDeleteView(LoginRequiredMixin, OwnerOrAdminMixin, DeleteView):
+    model = Todo
+    template_name = 'todo/todo_confirm_delete.html'
+    success_url = reverse_lazy('todo:list')

@@ -23,6 +23,9 @@ from users.views import signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('users.urls')),  # 회원가입·로그인·로그아웃
+    path('', include('todo.urls')),            # To-Do 앱을 루트로
+]
     path('accounts/signup/', signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('cbv/', include(('todo.urls', 'todo'), namespace='cbv')),

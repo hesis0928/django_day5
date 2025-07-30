@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}새 To‑Do 만들기{% endblock %}
+{% block title %}To-Do 생성{% endblock %}
 {% block content %}
   <h1>새 To‑Do 만들기</h1>
+  <h2>새 To-Do 생성</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">저장</button>
   </form>
   <p><a href="{% url 'cbv:cbv_todo_list' %}">취소</a></p>
+  <a href="{% url 'todo:list' %}">목록으로</a>
 {% endblock %}

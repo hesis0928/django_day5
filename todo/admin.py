@@ -1,16 +1,18 @@
 from django.contrib import admin
-from .models import Todo          # ← Todo 모델을 가져옵니다
+from .models import Todo
 
 @admin.register(Todo)
 class TodoAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
+        'user_username',
         'title',
-        'description',
-        'start_date',
-        'end_date',
+        'category',
         'is_completed',
         'created_at',
-        'modified_at',
     )
     list_editable = ('is_completed',)
+
+    def user_username(self, obj):
+        return obj.user.username
+    user_username.short_description = '작성자'
+    user_username.admin_order_field = 'user__username'
