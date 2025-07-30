@@ -15,17 +15,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 # config/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
+from users.views import signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/signup/', signup, name='signup'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('cbv/', include(('todo.urls', 'todo'), namespace='cbv')),
 
-    # accounts/* 는 users 앱으로
-    path('accounts/', include('users.urls')),
+    # ← 이 부분을 추가
+    path('accounts/', include('django.contrib.auth.urls')),
 
-    # todo/ 로 들어오는 건 todo.urls에 네임스페이스 todo로 위임
-    path('todo/', include(('todo.urls', 'todo'), namespace='todo')),
+    # Optional: 루트에 바로 리다이렉트 걸어주고 싶다면
+    path('', RedirectView.as_view(pattern_name='cbv:cbv_todo_list', permanent=False)),
 ]
+
 
 

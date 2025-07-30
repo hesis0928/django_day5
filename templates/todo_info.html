@@ -1,18 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}{{ todo.title }} 상세{% endblock %}
-
 {% block content %}
-  <h1>{{ todo.title }}</h1>
-  <hr>
-  <p><strong>설명:</strong> {{ todo.description }}</p>
-  <p><strong>시작일:</strong> {{ todo.start_date }}</p>
-  <p><strong>마감일:</strong> {{ todo.end_date }}</p>
-  <p><strong>완료여부:</strong> {{ todo.is_completed|yesno:"완료,미완료" }}</p>
-  <p><small>생성일: {{ todo.created_at }}</small></p>
-  <p><small>수정일: {{ todo.modified_at }}</small></p>
-
-  <!-- 목록으로 돌아가기 -->
-  <p>
-    <a href="{% url 'todo:todo_list' %}">← 목록으로 돌아가기</a>
-  </p>
+  <h1>{{ title }}</h1>
+  <p>{{ description }}</p>
+  <a href="{% url 'cbv:cbv_todo_update' pk %}">수정</a>
+  <form method="post" action="{% url 'cbv:cbv_todo_delete' pk %}">
+    {% csrf_token %}
+    <button type="submit">삭제</button>
+  </form>
 {% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}새 To‑Do 만들기{% endblock %}
+{% block content %}
+  <h1>새 To‑Do 만들기</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">저장</button>
+  </form>
+  <p><a href="{% url 'cbv:cbv_todo_list' %}">취소</a></p>
+{% endblock %}

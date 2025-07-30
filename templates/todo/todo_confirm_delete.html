@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}To‑Do 삭제 확인{% endblock %}
+{% block content %}
+  <h1>To‑Do 삭제 확인</h1>
+  <p>정말로 "{{ object.title }}" 을(를) 삭제하시겠습니까?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">삭제</button>
+    <a href="{% url 'cbv:cbv_todo_info' object.pk %}">취소</a>
+  </form>
+{% endblock %}

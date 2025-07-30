@@ -1,11 +1,16 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from users.views import signup
+from .cb_views import (
+    TodoListView, TodoDetailView,
+    TodoCreateView, TodoUpdateView, TodoDeleteView
+)
 
 app_name = 'todo'
 urlpatterns = [
-    path('', views.todo_list, name='todo_list'),
-    path('create/', views.todo_create, name='todo_create'),
-    path('<int:todo_id>/', views.todo_info, name='todo_info'),
-    path('<int:todo_id>/update/', views.todo_update, name='todo_update'),
-    path('<int:todo_id>/delete/', views.todo_delete, name='todo_delete'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('todo/',             TodoListView.as_view(),   name='cbv_todo_list'),
+    path('todo/create/',      TodoCreateView.as_view(), name='cbv_todo_create'),
+    path('todo/<int:pk>/',    TodoDetailView.as_view(), name='cbv_todo_info'),
+    path('todo/<int:pk>/update/', TodoUpdateView.as_view(), name='cbv_todo_update'),
+    path('todo/<int:pk>/delete/', TodoDeleteView.as_view(), name='cbv_todo_delete'),
 ]

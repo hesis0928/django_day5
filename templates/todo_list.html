@@ -1,20 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}To‑Do 목록{% endblock %}
-
 {% block content %}
   <h1>To‑Do 목록</h1>
-
-  {% if todos %}
-    <ul>
-      {% for t in todos %}
-        <li>
-          <!-- todo_info 뷰로 이동 -->
-          <a href="{% url 'todo:todo_info' t.id %}">{{ t.title }}</a>
-          {% if t.is_completed %} ✔️{% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>등록된 할 일이 없습니다.</p>
-  {% endif %}
+  <a href="{% url 'cbv:cbv_todo_create' %}">새로 만들기</a>
+  <form method="get"><input name="q" value="{{ request.GET.q }}"><button>검색</button></form>
+  {% for todo in todos %}
+    <p>
+      <a href="{% url 'cbv:cbv_todo_info' todo.pk %}">{{ todo.title }}</a>
+    </p>
+  {% endfor %}
+  {% include 'pagination.html' with page_obj=page_obj %}
 {% endblock %}

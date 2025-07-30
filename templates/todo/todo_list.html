@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}To‑Do 목록 (CBV){% endblock %}
+{% block content %}
+  <h1>To‑Do 목록</h1>
+
+  <form method="get" action="">
+    <input type="text" name="q" placeholder="검색" value="{{ request.GET.q }}">
+    <button type="submit">검색</button>
+  </form>
+
+  <p><a href="{% url 'cbv:cbv_todo_create' %}">새 To‑Do 만들기</a></p>
+
+  {% if todos %}
+    <ul>
+      {% for todo in todos %}
+        <li>
+          <a href="{% url 'cbv:cbv_todo_info' todo.pk %}">
+            {% if user.is_staff %}[{{ todo.user.username }}] {% endif %}{{ todo.title }}
+          </a>
+          {% if todo.is_completed %}✔{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}">이전</a>
+      {% endif %}
+      <span>페이지 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}">다음</a>
+      {% endif %}
+    </div>
+
+  {% else %}
+    <p>등록된 To‑Do가 없습니다.</p>
+  {% endif %}
+{% endblock %}

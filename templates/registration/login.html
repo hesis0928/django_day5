@@ -1,0 +1,16 @@
+{# templates/registration/login.html #}
+{% extends 'base.html' %}
+
+{% block title %}로그인{% endblock %}
+
+{% block content %}
+  <h1>로그인</h1>
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}             {# ← 여기 반드시 있어야 아이디/비번 필드가 렌더링됩니다 #}
+    {% if next %}
+      <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+    <button type="submit">로그인</button>
+  </form>
+{% endblock %}
